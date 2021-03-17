@@ -10,6 +10,7 @@ public class SenceLoader : MonoBehaviour
     public void ReloadGame()
     {
         SceneManager.LoadScene("SandBox");
+        Time.timeScale = 1f;
     }
     public void QuitGame()
     {
