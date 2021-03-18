@@ -5,24 +5,35 @@ using UnityEngine;
 public class Weapon : MonoBehaviour
 {
     [SerializeField] Camera FPCamera;
-    [SerializeField] float range = 100f ;
+    [SerializeField] float range = 100f;
     [SerializeField] float damage = 10f;
     [SerializeField] ParticleSystem muzzleFlash;
     [SerializeField] GameObject hitEffect;
-    
+    [SerializeField] Ammo ammoSlot;
+    [SerializeField] float timeBetweenShots = .5f;
+
+    bool canShoot = true;
+
     void Update()
     {
-        if(Input.GetButtonDown("Fire1"))
+        if (Input.GetMouseButtonDown(0) && canShoot==true)
         {
-            Shoot();
-        }       
+            StartCoroutine(Shoot());
+        }
     }
-    private void Shoot()
-    {
-        ProcessRaycast();
-        PlaymuzzleFlash();
 
-    }   
+    IEnumerator Shoot()
+    {
+        canShoot = false;
+        if (ammoSlot.GetCurrentAmmo() > 0)
+        {
+            ProcessRaycast();
+            PlaymuzzleFlash();
+            ammoSlot.ReduceCurrentAmmo();
+        }
+        yield return new WaitForSeconds(timeBetweenShots);
+        canShoot = true; 
+    }
     void ProcessRaycast()
     {
         RaycastHit hit;
@@ -46,7 +57,7 @@ public class Weapon : MonoBehaviour
     }
     void CreateHitImpact(RaycastHit hit)
     {
-        GameObject impact = Instantiate(hitEffect,hit.point,Quaternion.LookRotation(hit.normal));
-        Destroy(impact,.1f);
+        GameObject impact = Instantiate(hitEffect, hit.point, Quaternion.LookRotation(hit.normal));
+        Destroy(impact, .1f);
     }
 }
